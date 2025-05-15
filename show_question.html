@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Quiz Questions</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+    <div class="header2">Quiz Questions</div>
+    <div class="bordertime">
+        <div class="button-container">
+            <a href="/admin_dash"><button class="nav-button">Home |</button></a>
+            <a href="/quiz-mgmt"><button class="nav-button">Quiz |</button></a>
+            <button class="nav-button">Summary |</button>
+            <a href="/login"><button class="nav-button">Logout</button></a>
+            <input class="search" type="search" placeholder="Search">
+            <button class="searching">Search</button>
+            <h4 class="text">Welcome {{ name }}</h4>
+        </div>
+        <div class="container">
+            <a href="{{ url_for('show_quizzes', subject_id=quiz.subject_id, chapter_id=quiz.chapter_id) }}">
+                <button class="back-btn">← Back to Quizzes</button>
+            </a>
+            <h2>{{ quiz.title }} - Questions</h2>
+
+            {% if questions %}
+            <table class="questions-table">
+                <thead>
+                    <tr>
+                        <th>Sr.No.</th>
+                        <th>Question</th>
+                        <th>Option A</th>
+                        <th>Option B</th>
+                        <th>Option C</th>
+                        <th>Option D</th>
+                        <th>Answer</th>
+                        <!-- <th>Hints</th> -->
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for question in questions %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ question.question_text }}</td>
+                        {% set options_list = question.options|list %}
+                        {% if options_list|length >= 1 %}
+                        <td {% if options_list[0].is_correct %}class="correct-option" {% endif %}>{{
+                            options_list[0].option_text }}</td>
+                        {% else %}
+                        <td>-</td>
+                        {% endif %}
+
+                        {% if options_list|length >= 2 %}
+                        <td {% if options_list[1].is_correct %}class="correct-option" {% endif %}>{{
+                            options_list[1].option_text }}</td>
+                        {% else %}
+                        <td>-</td>
+                        {% endif %}
+
+                        {% if options_list|length >= 3 %}
+                        <td {% if options_list[2].is_correct %}class="correct-option" {% endif %}>{{
+                            options_list[2].option_text }}</td>
+                        {% else %}
+                        <td>-</td>
+                        {% endif %}
+
+                        {% if options_list|length >= 4 %}
+                        <td {% if options_list[3].is_correct %}class="correct-option" {% endif %}>{{
+                            options_list[3].option_text }}</td>
+                        {% else %}
+                        <td>-</td>
+                        {% endif %}
+
+                        <td>
+                            {% for option in options_list %}
+                            {% if option.is_correct %}
+                            {% if loop.index == 1 %}A{% endif %}
+                            {% if loop.index == 2 %}B{% endif %}
+                            {% if loop.index == 3 %}C{% endif %}
+                            {% if loop.index == 4 %}D{% endif %}
+                            {% endif %}
+                            {% endfor %}
+                        </td>
+                        
+                        <td>
+                            <!-- Button to include options data -->
+                            <button class="action-btn edit-btn" data-bs-toggle="modal"
+                                data-bs-target="#editQuestionModal" 
+                                data-question-id="{{ question.id }}"
+                                data-question-text="{{ question.question_text }}"
+                                data-question-hint="{{ question.hint|default('') }}"
+                                {% for option in options_list %}
+                                data-option-{{ loop.index }}-id="{{ option.id }}"
+                                data-option-{{ loop.index }}-text="{{ option.option_text }}"
+                                data-option-{{ loop.index }}-correct="{{ 'true' if option.is_correct else 'false' }}"
+                                {% endfor %}
+                                data-options-count="{{ options_list|length }}">
+                                EDIT
+                            </button>
+
+                            <a href="{{ url_for('delete_question', question_id=question.id) }}"
+                                onclick="return confirm('Are you sure you want to delete this question?')">
+                                <button class="action-btn delete-btn">DELETE</button>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="no-questions">
+                <h3>No Questions available for this quiz</h3>
+                <p>Click the button below to add new questions.</p>
+            </div>
+            {% endif %}
+
+            <center>
+                <a href="{{ url_for('new_question', quiz_id=quiz.id) }}">
+                    <button class="adding-button">+ Add New Question</button>
+                </a>
+            </center>
+        </div>
+    </div>
+
+    <!-- Edit Question Modal -->
+    <div class="modal fade" id="editQuestionModal" tabindex="-1" aria-labelledby="editQuestionModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editQuestionModalLabel">Edit Question</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editQuestionForm" method="POST" action="">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="questionText" class="form-label">Question</label>
+                            <textarea class="form-control" id="questionText" name="question_text" rows="3"
+                                required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Options:</label>
+                            <div id="optionsContainer" class="option-container">
+                                <!-- Options will be loaded dynamically -->
+                                <div class="option-group">
+                                    <div class="option-label">A</div>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="option_text_A" required>
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                                <input type="radio" name="correct_option" value="A" required>
+                                                <span class="ms-1"> Correct</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="option-group">
+                                    <div class="option-label">B</div>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="option_text_B" required>
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                                <input type="radio" name="correct_option" value="B">
+                                                <span class="ms-1"> Correct</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="option-group">
+                                    <div class="option-label">C</div>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="option_text_C" required>
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                                <input type="radio" name="correct_option" value="C">
+                                                <span class="ms-1"> Correct</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="option-group">
+                                    <div class="option-label">D</div>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="option_text_D" required>
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                                <input type="radio" name="correct_option" value="D">
+                                                <span class="ms-1"> Correct</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+    const editModal = document.getElementById('editQuestionModal');
+
+    if (editModal) {
+        editModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+
+            // Extract info from data attributes
+            const questionId = button.getAttribute('data-question-id');
+            const questionText = button.getAttribute('data-question-text');
+            const questionHint = button.getAttribute('data-question-hint');
+            const optionsCount = parseInt(button.getAttribute('data-options-count') || '0');
+
+            // Update the modal's form action and fields
+            const form = document.getElementById('editQuestionForm');
+            form.action = `/edit_question/${questionId}`;
+
+            document.getElementById('questionText').value = questionText;
+            
+
+            // Populate options from data attributes
+            const letters = ['A', 'B', 'C', 'D'];
+            
+            for (let i = 1; i <= 4; i++) {
+                const letter = letters[i-1];
+                const optionText = button.getAttribute(`data-option-${i}-text`) || '';
+                const optionCorrect = button.getAttribute(`data-option-${i}-correct`) === 'true';
+                const optionId = button.getAttribute(`data-option-${i}-id`);
+                
+                // Set option text
+                const optionInput = document.querySelector(`input[name="option_text_${letter}"]`);
+                if (optionInput) {
+                    optionInput.value = optionText;
+                    
+                    // Remove any existing hidden input for option ID to prevent duplicates
+                    const existingHidden = optionInput.parentNode.querySelector(`input[name="option_id_${letter}"]`);
+                    if (existingHidden) {
+                        existingHidden.remove();
+                    }
+                    
+                    // Create hidden input for option ID
+                    if (optionId) {
+                        const hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = `option_id_${letter}`;
+                        hiddenInput.value = optionId;
+                        optionInput.parentNode.appendChild(hiddenInput);
+                    }
+                }
+                
+                // Set correct option
+                if (optionCorrect) {
+                    const radioButton = document.querySelector(`input[type="radio"][name="correct_option"][value="${letter}"]`);
+                    if (radioButton) {
+                        radioButton.checked = true;
+                    }
+                }
+            }
+        });
+    }
+});
+    </script>
+</body>
+
+</html>

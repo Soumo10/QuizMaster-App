@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+    <title>Quiz Management</title>
+</head>
+<body>
+    <header class="header2">Quiz Management</header>
+    <div class="bordertime">
+        <div class="button-container">
+            <a href="/admin_dash"><button class="nav-button">Home |</button></a>
+            <a href="/quiz-mgmt"><button class="nav-button">Quiz |</button></a>
+            <a href="/show_user"><button class="nav-button">Users |</button></a>
+            <a href="/summary_charts"><button class="nav-button">Summary |</button></a>
+            <a href="/login"><button class="nav-button">Logout</button></a>
+
+            <h4 class="text">Welcome {{ name }}</h4>
+        </div>
+
+        <h3>Quiz Attempts</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>User Name</th>
+                    <th>Subject</th>
+                    <th>Chapter</th>
+                    <th>Quiz Title</th>
+                    <th>Score</th>
+                    <th>Attempt Number</th>
+                    <th>Attempted Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for attempt in attempts %}
+                <tr>
+                    <td>{{ attempt.user.full_name if attempt.user else 'N/A' }}</td>
+                    <td>{{ attempt.quiz.subject.name if attempt.quiz and attempt.quiz.subject else 'N/A' }}</td>
+                    <td>{{ attempt.quiz.chapter.name if attempt.quiz and attempt.quiz.chapter else 'N/A' }}</td>
+                    <td>{{ attempt.quiz.title if attempt.quiz else 'N/A' }}</td>
+                    <td>{{ (attempt.score | round(2)) if attempt.score is not none else 'N/A' }}%</td>
+                    <td>{{ attempt.attempt_number or 'N/A' }}</td>
+                    <td>{{ attempt.attempt_date or 'N/A' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

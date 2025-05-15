@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="stylesheet" href="/static/style.css">
+  <title>User dashboard</title>
+</head>
+
+<body>
+  <header class="header">
+    User Dashboard
+  </header>
+
+  <!-- top-navbar -->
+  <div class="bordertime">
+    <div class="button-container">
+      <a href="{{ url_for('user_dash', email=user.email) }}">
+        <button class="nav-button">Home |</button>
+      </a>
+      <a href="{{ url_for('quiz_scores', email=user.email) }}">
+        <button class="nav-button">Score |</button>
+      </a>
+      <a href="{{ url_for('summary_charts', email=user.email) }}">
+        <button class="nav-button">Summary |</button>
+      </a>
+      <a href="{{ url_for('user_login') }}">
+        <button class="nav-button">Logout</button>
+      </a>
+      <input class="search" type="search" placeholder="Search">
+      <button class="searching">
+        <search>Search</search>
+      </button>
+      </input>
+      <h4 class="text">Welcome {{ full_name }}</h4>
+    </div>
+
+    <div class="topuser">Available Quizzes
+      {% if msg %}
+      <div class="alert">{{ msg }}</div>
+      {% endif %}
+      <table>
+        <thead>
+          <tr class="userhead">
+            <th>ID</th>
+            <th>Title</th>
+            <th>Subject</th>
+            <th>Chapter</th>
+            <th>No. of Questions</th>
+            <th>Duration</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for quiz in quizzes %}
+          <tr>
+            <td>{{ quiz.id }}</td>
+            <td>{{ quiz.title }}</td>
+            <td>{{ quiz.subject.name }}</td>
+            <td>{{ quiz.chapter.name }}</td>
+            <td>{{ quiz.questions|length }}</td>
+            <td>{{ quiz.duration }} seconds</td>
+            <td>
+              <a href="{{ url_for('view_quiz', quiz_id=quiz.id, email=user.email) }}">
+                <button class="view-button">View</button>
+              </a>
+              <a href="{{ url_for('take_quiz', quiz_id=quiz.id, email=user.email) }}">
+                <button class="start-button">Start Quiz</button>
+              </a>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="7" class="text-center">No quizzes available at the moment.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+
+</html>

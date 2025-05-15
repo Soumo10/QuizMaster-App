@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="stylesheet" href="/static/style.css">
+  <title>View Quiz</title>
+</head>
+
+<body>
+  <header class="header">
+    Quiz Details
+  </header>
+
+  <!-- top-navbar -->
+  <div class="bordertime">
+    <div class="button-container">
+      <a href="{{ url_for('user_dash', email=email) }}">
+        <button class="nav-button">Home |</button>
+      </a>
+      <a href="{{ url_for('quiz_scores', email=email) }}">
+        <button class="nav-button">Score |</button>
+      </a>
+      <button class="nav-button">Summary |</button>
+      <a href="{{ url_for('user_login') }}">
+        <button class="nav-button">Logout</button>
+      </a>
+      <h4 class="text">Welcome {{ user.full_name }}</h4>
+    </div>
+
+    <div class="quiz-details">
+      <h2>{{ quiz.title }}</h2>
+      
+      <table class="details-table">
+        <tr>
+          <th>Subject:</th>
+          <td>{{ quiz.subject.name }}</td>
+        </tr>
+        <tr>
+          <th>Chapter:</th>
+          <td>{{ quiz.chapter.name }}</td>
+        </tr>
+        <tr>
+          <th>Number of Questions:</th>
+          <td>{{ quiz.questions|length }}</td>
+        </tr>
+        <tr>
+          <th>Duration:</th>
+          <td>{{ quiz.duration }} seconds</td>
+        </tr>
+        <tr>
+          <th>Created On:</th>
+          <td>{{ quiz.created_at }}</td>
+        </tr>
+      </table>
+      
+      <div class="action-buttons">
+        <a href="{{ url_for('take_quiz', quiz_id=quiz.id, email=email) }}">
+          <button class="start-button">Start Quiz</button>
+        </a>
+        <a href="{{ url_for('user_dash', email=email) }}">
+          <button class="back-button">Back to Dashboard</button>
+        </a>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

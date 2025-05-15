@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Add New Quiz</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+    
+</head>
+
+<body>
+    <div class="header2">Add New Quiz</div>
+    <div class="bordertime">
+        <div class="button-container">
+            <a href="/admin_dash"><button class="nav-button">Home |</button></a>
+            <a href="/quiz-mgmt"><button class="nav-button">Quiz |</button></a>
+            <button class="nav-button">Summary |</button>
+            <a href="/login"><button class="nav-button">Logout</button></a>
+            <input class="search" type="search" placeholder="Search">
+            <button class="searching">Search</button>
+            <h4 class="text">Welcome Admin</h4>
+        </div>
+        
+        <div class="container">
+            <a href="{{ url_for('show_quizzes', subject_id=subject.id, chapter_id=chapter.id) }}">
+                <button class="back-btn">← Back to Quizzes</button>
+            </a>
+            
+            <div class="form-container">
+                <h2>Add New Quiz to "{{ chapter.name }}"</h2>
+                <p>Subject: {{ subject.name }}</p>
+                
+                {% if msg %}
+                <div class="error-msg">{{ msg }}</div>
+                {% endif %}
+                
+                <form method="POST" action="{{ url_for('new_quiz', subject_id=subject.id, chapter_id=chapter.id) }}">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Quiz Title</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="duration" class="form-label">Duration (seconds)</label>
+                        <input type="number" class="form-control" id="duration" name="duration" required min="1" max="180">
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="is_active" name="is_active" checked>
+                        <label class="form-check-label" for="is_active">Active</label>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">Create Quiz</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

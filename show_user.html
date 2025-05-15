@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <title>User Management</title>
+</head>
+
+<body>
+    <header class="header2">Admin Dashboard</header>
+
+    <div class="bordertime">
+        <div class="button-container">
+            <a href="/admin_dash"><button class="nav-button">Home |</button></a>
+            <a href="/quiz-mgmt"><button class="nav-button">Quiz |</button></a>
+            <a href="/show_user"><button class="nav-button">Users |</button></a>
+            <button class="nav-button">Summary |</button>
+            <a href="/login"><button class="nav-button">Logout</button></a>
+            <input class="search" type="search" placeholder="Search">
+            <button class="searching">Search</button>
+            <h4 class="text">Welcome {{ name }}</h4>
+        </div>
+        
+        <h2>User Details</h2>
+
+        {% if users %}
+            <table class="subject-table">
+                <thead>
+                    <tr>
+                        <th>Sr.No.</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Date of Birth</th>
+                        <th>Qualifications</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ user.full_name }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.dob }}</td>
+                            <td>{{ user.qual }}</td>
+                            <td>
+                                <!-- View button for more details -->
+                                <button class="action-btn show-btn" data-bs-toggle="modal" 
+                                        data-bs-target="#viewUserModal" 
+                                        data-user-id="{{ user.id }}"
+                                        data-user-fullname="{{ user.full_name }}"
+                                        data-user-email="{{ user.email }}"
+                                        data-user-dob="{{ user.dob }}"
+                                        data-user-qualifications="{{ user.qual }}">
+                                    VIEW
+                                </button>
+                                
+                                <!-- Delete button -->
+                                <a href="{{ url_for('delete_user', user_id=user.id) }}" 
+                                   onclick="return confirm('Are you sure you want to delete this user?')">
+                                    <button class="action-btn delete-btn">DELETE</button>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="no-subjects">
+                <h3>No Users available</h3>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- View User Modal -->
+    <div class="modal fade" id="viewUserModal" tabindex="-1" aria-labelledby="viewUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewUserModalLabel">User Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <strong>Full Name:</strong> <span id="modalFullname"></span>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Email:</strong> <span id="modalEmail"></span>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Date of Birth:</strong> <span id="modalDob"></span>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Qualifications:</strong> <span id="modalQualifications"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript to populate the view modal -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const viewModal = document.getElementById('viewUserModal');
+            if (viewModal) {
+                viewModal.addEventListener('show.bs.modal', function(event) {
+                    // Button that triggered the modal
+                    const button = event.relatedTarget;
+                    
+                    // Extract info from data attributes
+                    const fullname = button.getAttribute('data-user-fullname');
+                    const email = button.getAttribute('data-user-email');
+                    const dob = button.getAttribute('data-user-dob');
+                    const qualifications = button.getAttribute('data-user-qualifications');
+                    
+                    // For Update the modal's content
+                    document.getElementById('modalFullname').textContent = fullname;
+                    document.getElementById('modalEmail').textContent = email;
+                    document.getElementById('modalDob').textContent = dob;
+                    document.getElementById('modalQualifications').textContent = qualifications;
+                });
+            }
+        });
+    </script>
+</body>
+</html>

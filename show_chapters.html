@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Subject Chapters</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    
+</head>
+
+<body>
+    <header class="header2">Subject Chapters</header>
+
+    <div class="bordertime">
+        <div class="button-container">
+            <a href="/admin_dash"><button class="nav-button">Home |</button></a>
+            <a href="/quiz-mgmt"><button class="nav-button">Quiz |</button></a>
+            <button class="nav-button">Summary |</button>
+            <a href="/login"><button class="nav-button">Logout</button></a>
+            <input class="search" type="search" placeholder="Search">
+            <button class="searching">Search</button>
+            <h4 class="text">Welcome {{ name }}</h4>
+        </div>
+        
+        <div class="container mt-4">
+            <a href="/admin_dash">
+                <button class="back-btn">← Back to Subjects</button>
+            </a>
+            
+            <div class="subject-info">
+                <h2>{{ subject.name }}</h2>
+                <!-- <p>{{ subject.desc }}</p> -->
+            </div>
+            
+            <h3>Chapters</h3>
+            
+            {% if chapters %}
+                <table class="chapter-table">
+                    <thead>
+                        <tr>
+                            <th>Sr.No.</th>
+                            <th>Chapter Name</th>
+                            <th>Chapter Description</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for chapter in chapters %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ chapter.name }}</td>
+                                <td>{{ chapter.desc }}</td>
+                                <td>
+                                    <!-- Show button to view quizzes for this chapter -->
+                                    <a href="{{ url_for('show_quizzes', subject_id=subject.id, chapter_id=chapter.id) }}">
+                                        <button class="action-btn show-btn">SHOW QUIZZES</button>
+                                    </a>
+                                    
+                                    <!-- Edit button triggers modal -->
+                                    <button class="action-btn edit-btn" data-bs-toggle="modal" 
+                                            data-bs-target="#editChapterModal" 
+                                            data-chapter-id="{{ chapter.id }}"
+                                            data-chapter-name="{{ chapter.name }}"
+                                            data-chapter-desc="{{ chapter.desc }}">
+                                        EDIT
+                                    </button>
+                                    
+                                    <!-- Delete button -->
+                                    <a href="{{ url_for('delete_chapter', chapter_id=chapter.id) }}" 
+                                       onclick="return confirm('Are you sure you want to delete this chapter?')">
+                                        <button class="action-btn delete-btn">DELETE</button>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="no-chapters">
+                    <h3>No Chapters available for this subject</h3>
+                    <p>Click the button below to add a new chapter.</p>
+                </div>
+            {% endif %}
+
+            <!-- Add Chapter Button -->
+            <a href="{{ url_for('new_chapter', subject_id=subject.id) }}">
+                <button type="button" class="add-chapter-btn">+ Add New Chapter</button>
+            </a>
+        </div>
+    </div>
+
+<!-- Edit Chapter Modal -->
+<div class="modal fade" id="editChapterModal" tabindex="-1" aria-labelledby="editChapterModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editChapterModalLabel">Edit Chapter</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editChapterForm" method="POST" action="">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="chapterName" class="form-label">Chapter Name</label>
+                        <input type="text" class="form-control" id="chapterName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="chapterDesc" class="form-label">Chapter Description</label>
+                        <textarea class="form-control" id="chapterDesc" name="desc" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript to populate the edit modal -->
+<script>
+    // When edit modal shown, populate it with the chapter data
+    document.addEventListener('DOMContentLoaded', function() {
+        const editModal = document.getElementById('editChapterModal');
+        if (editModal) {
+            editModal.addEventListener('show.bs.modal', function(event) {
+                // Button that triggered the modal
+                const button = event.relatedTarget;
+                
+                // Extract info from data attributes
+                const chapterId = button.getAttribute('data-chapter-id');
+                const chapterName = button.getAttribute('data-chapter-name');
+                const chapterDesc = button.getAttribute('data-chapter-desc');
+                
+                // Update the modal's form action and fields
+                const form = document.getElementById('editChapterForm');
+                form.action = `/edit_chapter/${chapterId}`;
+                
+                document.getElementById('chapterName').value = chapterName;
+                document.getElementById('chapterDesc').value = chapterDesc;
+            });
+        }
+    });
+</script>
+
+</body>
+</html>

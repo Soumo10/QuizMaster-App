@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Quiz Interface</title>
+
+</head>
+<body>
+
+    {% block title %}Quiz - Question {{ current_question }}/{{ total_questions }}{% endblock %}
+
+{% block content %}
+    <h2>Quiz Interface</h2>
+
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <div class="question-number">Question <span>{{ current_question }}/{{ total_questions }}</span></div>
+            <div class="timer">{{ time_left }}</div>
+        </div>
+        
+        {% if show_progress_bar %}
+        <div class="progress-bar">
+            <div class="progress"></div>
+        </div>
+        {% endif %}
+        
+        <div class="question-box">
+            <h3>{{ question.text }}</h3>
+        </div>
+        
+        <form method="POST" action="{{ url_for('save_answer') }}">
+            <input type="hidden" name="question_id" value="{{ question.id }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            
+            <div class="options">
+                {% for option in question.options %}
+                <label class="{% if user_answers[current_question-1] == loop.index0 %}selected{% endif %}">
+                    <input type="radio" name="answer" value="{{ loop.index0 }}" 
+                           {% if user_answers[current_question-1] == loop.index0 %}checked{% endif %}>
+                    {{ option }}
+                </label>
+                {% endfor %}
+            </div>
+            
+            <div class="buttons">
+                <button type="submit" name="action" value="save_next" class="btn save">
+                    {% if current_question == total_questions %}Previous{% else %}Save and Next{% endif %}
+                </button>
+                <button type="submit" name="action" value="submit" class="btn submit">Submit Quiz</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+
+{% block title %}Quiz Summary{% endblock %}
+
+{% block content %}
+    <h2>Quiz Interface</h2>
+
+    <div class="quiz-summary">
+        <h2>Quiz Completed</h2>
+        <div class="summary-item">
+            <span>Subject:</span>
+            <span>{{ quiz.subject }}</span>
+        </div>
+        <div class="summary-item">
+            <span>Chapter:</span>
+            <span>{{ quiz.chapter }}</span>
+        </div>
+        <div class="summary-item">
+            <span>Questions Attempted:</span>
+            <span>{{ attempted_count }}/{{ total_questions }}</span>
+        </div>
+        <div class="summary-item">
+            <span>Correct Answers:</span>
+            <span>{{ correct_count }}</span>
+        </div>
+        <div class="summary-item">
+            <span>Time Taken:</span>
+            <span>{{ time_taken }}</span>
+        </div>
+        <div class="summary-item">
+            <span>Score:</span>
+            <span>{{ correct_count }}/{{ total_questions }}</span>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="{{ url_for('dashboard') }}" class="btn save" style="text-decoration: none;">
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+{% endblock %}
+
+</body>
+</html>

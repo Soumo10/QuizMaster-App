@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Welcome to Quiz Master</title>
+</head>
+<body class="index-body">
+    <div class="index-bg-shapes">
+        <div class="index-shape index-shape-1"></div>
+        <div class="index-shape index-shape-2"></div>
+        <div class="index-shape index-shape-3"></div>
+    </div>
+    
+    <div class="index-container">
+        <h2 class="index-heading">Welcome to Quiz Master App</h2>
+        <div class="index-button-group">
+            <a href="{{ url_for('user_login') }}" class="index-btn index-btn-login">Login</a>
+            <a href="{{ url_for('user_signup') }}" class="index-btn index-btn-register">Register</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Adding a Subject </title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="new"> New Subject</div>
+    <form action="/new-subject" method="POST">
+        <div class="name"> Name of the Subject :
+            <input type="text" name="name">
+        </div>
+        <div class="desc"> Description :
+            <input class="bigbox" type="text" name="desc">
+        </div>
+        <center>
+
+            <button class="save">Save</button>
+            
+            <a href="{{ url_for('admin_dashboard', subject_id=subject_id) }}">
+                <button type="button" class="cancel">Cancel</button></a>
+        </center>
+    </form>
+</body>
+
+</html>

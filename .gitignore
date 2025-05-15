@@ -1,0 +1,23 @@
+# Byte-compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+quiz_venv/
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Environment variables
+.env
+
+# VS Code settings (if using VS Code)
+.vscode/
+
+# macOS and Windows system files
+.DS_Store
+Thumbs.db

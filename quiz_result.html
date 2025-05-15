@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/static/style.css">
+  <title>Quiz Summary</title>
+</head>
+<body>
+  <header class="header">
+    Quiz Summary: {{ quiz.title }}
+  </header>
+
+  <div class="bordertime">
+    <div class="button-container">
+      <a href="{{ url_for('user_dash', email=email) }}"><button class="nav-button">Home</button></a>
+      <a href="{{ url_for('quiz_scores', email=email) }}"><button class="nav-button">View Scores</button></a>
+      <a href="{{ url_for('user_login') }}"><button class="nav-button">Logout</button></a>
+      <h4 class="text">Welcome {{ user.full_name }}</h4>
+    </div>
+
+    <div class="topuser">
+      <h2>Your Quiz Results</h2>
+      <table>
+        <thead>
+          <tr class="userhead">
+            <th>Subject</th>
+            <th>Chapter</th>
+            <th>Time Taken</th>
+            <th>Attempt Date</th>
+            <th>Correct Answers</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ summary_data.subject_name }}</td>
+            <td>{{ summary_data.chapter_name }}</td>
+            <td>{{ summary_data.time_taken }}</td>
+            <td>{{ summary_data.attempt_date }}</td>
+            <td>{{ summary_data.correct_answers }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

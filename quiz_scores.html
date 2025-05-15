@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="stylesheet" href="/static/style.css">
+  <title>Quiz Scores</title>
+</head>
+
+<body>
+  <header class="header">
+    My Quiz Scores
+  </header>
+
+  <!-- top-navbar -->
+  <div class="bordertime">
+    <div class="button-container">
+      <a href="{{ url_for('user_dash', email=user.email) }}">
+        <button class="nav-button">Home |</button>
+      </a>
+      <a href="{{ url_for('quiz_scores', email=user.email) }}">
+        <button class="nav-button">Score |</button>
+      </a>
+      <button class="nav-button">Summary |</button>
+      <a href="{{ url_for('user_login') }}">
+        <button class="nav-button">Logout</button>
+      </a>
+
+      <!-- Search Container -->
+
+      <div class="search-container">
+
+        <form action="{{ url_for('user_search') }}" method="get">
+          <input type="hidden" name="email" value="{{ email }}">
+          <input type="search" name="query" class="search">
+          <button type="submit" class="searching">Search</button>
+        </form>
+      </div>
+
+
+      <h4 class="text">Welcome {{ user.full_name }}</h4>
+    </div>
+
+
+    <div class="topuser">
+      <h2>Your Quiz Performance</h2>
+      <table>
+        <thead>
+          <tr class="userhead">
+            <th>Quiz Title</th>
+            <th>Subject</th>
+            <th>Chapter</th>
+            <th>Correct Answers</th>
+            <th>Score (%)</th>
+            <th>Attempt Date</th>
+            <th>Total Attempts</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if scores %}
+          {% for score in scores %}
+          {% if score.quiz and score.quiz.subject and score.quiz.chapter %}
+          <tr>
+            <td>{{ score.quiz.title or 'N/A' }}</td>
+            <td>{{ score.quiz.subject.name or 'N/A' }}</td>
+            <td>{{ score.quiz.chapter.name or 'N/A' }}</td>
+            <td>
+              {% set total_questions = score.quiz.questions|length if score.quiz.questions else 0 %}
+              {% set correct_answers = (score.score * total_questions / 100)|round|int if total_questions > 0 else 0 %}
+              {{ correct_answers }}/{{ total_questions }}
+            </td>
+            <td>{{ score.score|round(2) }}%</td>
+            <td>{{ score.attempt_date or 'N/A' }}</td>
+            <td>
+              {{ attempts.get(score.quiz_id, 0) }}
+            </td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+          {% else %}
+          <tr>
+            <td colspan="7" class="text-center">
+              {% if query %}
+              No quiz scores found matching "{{ query }}".
+              {% else %}
+              You haven't taken any quizzes yet.
+              {% endif %}
+            </td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+
+</html>
